@@ -1,12 +1,12 @@
-"use client";
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import Link from "next/link";
-import images from "../assets";
-import { useTheme } from "next-themes";
-import { ButtonGroup, MenuItems } from "@/components";
-import { MenuText } from "./MenuItems";
+'use client';
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import Link from 'next/link';
+import images from '../assets';
+import { useTheme } from 'next-themes';
+import { ButtonGroup, Logo, MenuItems } from '@/components';
+import { MenuText } from './MenuItems';
 
 const ThemeToggler: React.FC<{
   setTheme: (theme: string) => void;
@@ -18,7 +18,7 @@ const ThemeToggler: React.FC<{
         type="checkbox"
         className="checkbox"
         id="checkbox"
-        onChange={() => setTheme(theme === "light" ? "dark" : "light")}
+        onChange={() => setTheme(theme === 'light' ? 'dark' : 'light')}
       />
       <label
         htmlFor="checkbox"
@@ -34,7 +34,7 @@ const ThemeToggler: React.FC<{
 
 const Navbar = () => {
   const { theme, setTheme } = useTheme();
-  const [active, setActive] = useState<MenuText>("Explore NFTs");
+  const [active, setActive] = useState<MenuText>('Explore NFTs');
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
 
@@ -46,16 +46,7 @@ const Navbar = () => {
             className="flexCenter md:hidden cursor-pointer"
             onClick={() => {}}
           >
-            <Image
-              src={images.logo02}
-              objectFit="contain"
-              width={32}
-              height={32}
-              alt="logo"
-            />
-            <p className="dark:text-white text-nft-black-1 font-semibold text-lg ml-1">
-              CryptoKet
-            </p>
+            <Logo />
           </div>
         </Link>
 
@@ -93,7 +84,7 @@ const Navbar = () => {
             height={20}
             alt="close"
             onClick={() => setIsOpen(false)}
-            className={`${theme === "light" && "filter invert"}`}
+            className={`${theme === 'light' && 'filter invert'}`}
           />
         ) : (
           <Image
@@ -103,7 +94,7 @@ const Navbar = () => {
             height={25}
             alt="menu"
             onClick={() => setIsOpen(true)}
-            className={`${theme === "light" && "filter invert"}`}
+            className={`${theme === 'light' && 'filter invert'}`}
           />
         )}
 
