@@ -44,7 +44,7 @@ const Navbar = () => {
         <Link href="/">
           <div
             className="flexCenter md:hidden cursor-pointer"
-            onClick={() => {}}
+            onClick={() => setActive('Explore NFTs')}
           >
             <Logo />
           </div>
