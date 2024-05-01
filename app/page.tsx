@@ -1,6 +1,6 @@
 'use client';
 import { Banner, CreatorCard } from '@/components';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import images from '@/assets';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
@@ -8,8 +8,8 @@ import { useTheme } from 'next-themes';
 const Home = () => {
   const parentRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-
   const { theme } = useTheme();
+  const [hideButtons, setHideButtons] = useState(false);
 
   const handleScroll = (direction: 'left' | 'right') => {
     const { current } = scrollRef;
@@ -37,10 +37,27 @@ const Home = () => {
     scrollRef.current!.scrollLeft += e.deltaY * 10;
   };
 
+  const isScrollable = () => {
+    const { current } = scrollRef;
+    const { current: parent } = parentRef;
+    if (!current || !parent) return;
+    if (current.scrollWidth >= parent.offsetWidth) {
+      setHideButtons(false);
+    } else {
+      setHideButtons(true);
+    }
+  };
+
   useEffect(() => {
     const scrollDiv = document.querySelector('#scrollDiv');
     // @ts-ignore
     scrollDiv!.addEventListener('wheel', handleHorizontalScroll);
+    isScrollable();
+    window.addEventListener('resize', isScrollable);
+
+    return () => {
+      window.removeEventListener('resize', isScrollable);
+    };
   }, []);
 
   return (
@@ -73,32 +90,35 @@ const Home = () => {
                 />
               ))}
 
-              <>
-                <div
-                  className="absolute w-8 h-8 minlg:w-12 minlg:h-12 top-45 cursor-pointer left-0"
-                  onClick={() => handleScroll('left')}
-                >
-                  <Image
-                    src={images.left}
-                    layout="fill"
-                    objectFit="contain"
-                    alt="left_arrow"
-                    className={`${theme === 'light' && 'filter invert'}`}
-                  />
-                </div>
-                <div
-                  className="absolute w-8 h-8 minlg:w-12 minlg:h-12 top-45 cursor-pointer right-0"
-                  onClick={() => handleScroll('right')}
-                >
-                  <Image
-                    src={images.right}
-                    layout="fill"
-                    objectFit="contain"
-                    alt="left_arrow"
-                    className={`${theme === 'light' && 'filter invert'}`}
-                  />
-                </div>
-              </>
+              {/* scroll buttons */}
+              {!hideButtons && (
+                <>
+                  <div
+                    className="absolute w-8 h-8 minlg:w-12 minlg:h-12 top-45 cursor-pointer left-0"
+                    onClick={() => handleScroll('left')}
+                  >
+                    <Image
+                      src={images.left}
+                      layout="fill"
+                      objectFit="contain"
+                      alt="left_arrow"
+                      className={`${theme === 'light' && 'filter invert'}`}
+                    />
+                  </div>
+                  <div
+                    className="absolute w-8 h-8 minlg:w-12 minlg:h-12 top-45 cursor-pointer right-0"
+                    onClick={() => handleScroll('right')}
+                  >
+                    <Image
+                      src={images.right}
+                      layout="fill"
+                      objectFit="contain"
+                      alt="left_arrow"
+                      className={`${theme === 'light' && 'filter invert'}`}
+                    />
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
