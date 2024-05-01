@@ -22,7 +22,7 @@ const ThemeToggler: React.FC<{
       />
       <label
         htmlFor="checkbox"
-        className="flexBetween w-8 h-4 bg-black rounded-2xl p-1 relative label"
+        className="flexBetween w-8 h-4 bg-black rounded-2xl p-1 relative label cursor-pointer"
       >
         <i className="fas fa-sun" />
         <i className="fas fa-moon" />

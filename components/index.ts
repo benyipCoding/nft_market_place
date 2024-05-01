@@ -6,6 +6,8 @@ import Button from './Button';
 import Logo from './Logo';
 import Banner from './Banner';
 import CreatorCard from './CreatorCard';
+import CreatorCards from './CreatorCards';
+import NFTCard from './NFTCard';
 
 export {
   Navbar,
@@ -16,4 +18,6 @@ export {
   Logo,
   Banner,
   CreatorCard,
+  CreatorCards,
+  NFTCard,
 };
