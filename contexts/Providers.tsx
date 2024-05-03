@@ -1,7 +1,7 @@
-"use client";
-import { ThemeProvider } from "next-themes";
-import { PropsWithChildren } from "react";
-import Script from "next/script";
+'use client';
+import { ThemeProvider } from 'next-themes';
+import { PropsWithChildren } from 'react';
+import Script from 'next/script';
 
 const Providers: React.FC<PropsWithChildren> = ({ children }) => {
   return (
