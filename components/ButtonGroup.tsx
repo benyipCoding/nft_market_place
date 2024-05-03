@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useContext, useMemo } from 'react';
 import { Button } from './';
 import { MenuText } from './MenuItems';
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
+import { NFTContext } from '@/contexts/NFTContext';
 
 interface ButtonGroupProps {
   setActive: React.Dispatch<React.SetStateAction<MenuText>>;
@@ -14,7 +15,11 @@ const ButtonGroup: React.FC<ButtonGroupProps> = ({
   router,
   setIsOpen,
 }) => {
-  const hasConnected = true;
+  const { connectWallet, currentAccount } = useContext(NFTContext);
+  const hasConnected = useMemo(
+    () => currentAccount && currentAccount !== '',
+    [currentAccount]
+  );
 
   return hasConnected ? (
     <Button
@@ -30,9 +35,7 @@ const ButtonGroup: React.FC<ButtonGroupProps> = ({
     <Button
       classStyles="mx-2 rounded-xl"
       btnName="Connect"
-      handleClick={() => {
-        //   connect MetaMask
-      }}
+      handleClick={connectWallet}
     />
   );
 };
