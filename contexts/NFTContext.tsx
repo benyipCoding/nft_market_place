@@ -5,17 +5,27 @@ import axios from 'axios';
 import { MarketAddress, MarketAddressABI } from './constants';
 import { PropsWithChildren, createContext, useEffect, useState } from 'react';
 import type { MetaMaskInpageProvider } from '@metamask/providers';
+// @ts-ignore
+import { create as ipfsHttpClient } from 'ipfs-http-client';
+
+const client = ipfsHttpClient({
+  host: 'localhost',
+  port: 5001,
+  protocol: 'http',
+});
 
 interface INFTContext {
   nftCurrency: string;
   connectWallet: () => Promise<void>;
   currentAccount: string;
+  uploadToIPFS: (file: File) => Promise<string | void>;
 }
 
 export const NFTContext = createContext<INFTContext>({
   nftCurrency: '',
   connectWallet: async () => {},
   currentAccount: '',
+  uploadToIPFS: async (_file) => '',
 });
 
 export const NFTProvider: React.FC<PropsWithChildren> = ({ children }) => {
@@ -51,8 +61,20 @@ export const NFTProvider: React.FC<PropsWithChildren> = ({ children }) => {
     // window.location.reload();
   };
 
+  const uploadToIPFS = async (file: File) => {
+    try {
+      const added = await client.add({ content: file });
+      const url = `https://ipfs.io/ipfs/${added.path}`;
+      return url;
+    } catch (error) {
+      console.log('Error uploading file to IPFS.');
+    }
+  };
+
   return (
-    <NFTContext.Provider value={{ nftCurrency, connectWallet, currentAccount }}>
+    <NFTContext.Provider
+      value={{ nftCurrency, connectWallet, currentAccount, uploadToIPFS }}
+    >
       {children}
     </NFTContext.Provider>
   );

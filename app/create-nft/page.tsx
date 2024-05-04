@@ -1,10 +1,11 @@
 'use client';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useMemo, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
 import images from '@/assets';
 import { Button, Input } from '@/components';
+import { NFTContext } from '@/contexts/NFTContext';
 
 const CreateNFT = () => {
   const { theme } = useTheme();
@@ -14,9 +15,15 @@ const CreateNFT = () => {
     name: '',
     description: '',
   });
+  const { uploadToIPFS } = useContext(NFTContext);
 
-  const onDrop = useCallback(() => {
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
     // upload image to the ipfs
+    const url = await uploadToIPFS(acceptedFiles[0]);
+    if (!url) return;
+    console.log('Upload file to IPFS successully', url);
+
+    setFileUrl(url);
   }, []);
 
   const {
