@@ -7,6 +7,8 @@ import { PropsWithChildren, createContext, useEffect, useState } from 'react';
 import type { MetaMaskInpageProvider } from '@metamask/providers';
 // @ts-ignore
 import { create as ipfsHttpClient } from 'ipfs-http-client';
+import { FormInputType } from '@/app/create-nft/page';
+import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 
 const client = ipfsHttpClient({
   host: 'localhost',
@@ -14,18 +16,28 @@ const client = ipfsHttpClient({
   protocol: 'http',
 });
 
+const fetchContract = (
+  signerOrProvider: ethers.providers.JsonRpcSigner | ethers.providers.Provider
+) => new ethers.Contract(MarketAddress, MarketAddressABI, signerOrProvider);
+
 interface INFTContext {
   nftCurrency: string;
   connectWallet: () => Promise<void>;
   currentAccount: string;
   uploadToIPFS: (file: File) => Promise<string | void>;
+  createNFT: (
+    formInput: FormInputType,
+    fileUrl: string,
+    router: AppRouterInstance
+  ) => Promise<void>;
 }
 
 export const NFTContext = createContext<INFTContext>({
   nftCurrency: '',
   connectWallet: async () => {},
   currentAccount: '',
-  uploadToIPFS: async (_file) => '',
+  uploadToIPFS: async () => {},
+  createNFT: async () => {},
 });
 
 export const NFTProvider: React.FC<PropsWithChildren> = ({ children }) => {
@@ -57,8 +69,7 @@ export const NFTProvider: React.FC<PropsWithChildren> = ({ children }) => {
     })) as string[];
 
     setCurrentAccount(accounts[0]);
-
-    // window.location.reload();
+    window.location.reload();
   };
 
   const uploadToIPFS = async (file: File) => {
@@ -71,9 +82,63 @@ export const NFTProvider: React.FC<PropsWithChildren> = ({ children }) => {
     }
   };
 
+  const createNFT = async (
+    formInput: FormInputType,
+    fileUrl: string,
+    router: AppRouterInstance
+  ) => {
+    const { name, description, price } = formInput;
+    if (!name || !description || !price || !fileUrl) return;
+    const data = JSON.stringify({ name, description, image: fileUrl });
+    try {
+      const added = await client.add(data);
+      const url = `https://ipfs.io/ipfs/${added.path}`;
+      await createSale(url, price);
+
+      router.push('/');
+    } catch (error) {
+      console.log('Error uploading file to IPFS.');
+    }
+  };
+
+  const createSale = async (
+    url: string,
+    formInputPrice: string,
+    isReselling: boolean,
+    id: number
+  ) => {
+    // connect wallet
+    try {
+      const web3Modal = new Web3Modal();
+      const connection = await web3Modal.connect();
+      const provider = new ethers.providers.Web3Provider(connection);
+      const signer = provider.getSigner();
+
+      const price = ethers.utils.parseUnits(formInputPrice, 'ether');
+      const contract = fetchContract(signer);
+      const listingPrice = await contract.getListingPrice();
+
+      const transaction = await contract.createToken(url, price, {
+        value: listingPrice.toString(),
+      });
+
+      return transaction.wait();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchNFTs = async () => {};
+
   return (
     <NFTContext.Provider
-      value={{ nftCurrency, connectWallet, currentAccount, uploadToIPFS }}
+      value={{
+        nftCurrency,
+        connectWallet,
+        currentAccount,
+        uploadToIPFS,
+        createNFT,
+      }}
     >
       {children}
     </NFTContext.Provider>
