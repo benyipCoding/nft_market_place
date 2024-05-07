@@ -1,9 +1,22 @@
 'use client';
 import { Banner, CreatorCards, NFTCard } from '@/components';
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import image from '@/assets';
+import { NFTContext } from '@/contexts/NFTContext';
+import { NFTItemType } from '@/types';
 
 const Home = () => {
+  const { fetchNFTs } = useContext(NFTContext);
+  const [nfts, setNfts] = useState<NFTItemType[]>([]);
+
+  useEffect(() => {
+    fetchNFTs().then((items) => {
+      if (!items) return;
+      setNfts(items);
+      console.log('@@@@@@@@', items);
+    });
+  }, []);
+
   return (
     <div className="flex justify-center sm:px-4 p-12">
       <div className="w-full minmd:w-4/5">
