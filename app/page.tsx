@@ -4,6 +4,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import image from '@/assets';
 import { NFTContext } from '@/contexts/NFTContext';
 import { NFTItemType } from '@/types';
+import { shortenAddress } from '@/utils/shortenAddress';
 
 const Home = () => {
   const { fetchNFTs } = useContext(NFTContext);
@@ -36,6 +37,21 @@ const Home = () => {
             <div>SearchBar</div>
           </div>
           <div className="mt-3 flex w-full flex-wrap">
+            {nfts.map((nft) => (
+              <NFTCard
+                key={nft.tokenId}
+                nft={{
+                  index: nft.tokenId,
+                  name: nft.name,
+                  seller: shortenAddress(nft.seller),
+                  owner: nft.owner,
+                  description: nft.description,
+                  price: nft.price,
+                  image: nft.image,
+                }}
+              />
+            ))}
+
             {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item, index) => (
               <NFTCard
                 key={`nft-${index + 1}`}

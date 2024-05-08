@@ -10,7 +10,6 @@ import { create as ipfsHttpClient } from 'ipfs-http-client';
 import { FormInputType } from '@/app/create-nft/page';
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import { NFTItemType } from '@/types';
-import { metadata } from '@/app/layout';
 
 const client = ipfsHttpClient({
   host: 'localhost',
@@ -97,6 +96,7 @@ export const NFTProvider: React.FC<PropsWithChildren> = ({ children }) => {
     try {
       const added = await client.add(data);
       const url = `https://ipfs.io/ipfs/${added.path}`;
+
       await createSale(url, price);
 
       router.push('/');
@@ -144,11 +144,15 @@ export const NFTProvider: React.FC<PropsWithChildren> = ({ children }) => {
         async ({ tokenId, seller, owner, price: unformattedPrice }: any) => {
           // tokenURI方法是继承自ERC721URIStorage合约的方法
           const tokenURI = await contract.tokenURI(tokenId);
+          console.log('卡了吗？1');
+          console.log(tokenURI);
+
           const {
             data: { image, name, description },
           } = await axios.get(tokenURI);
+          console.log('卡了吗？2');
 
-          const price = ethers.utils.parseUnits(
+          const price = ethers.utils.formatUnits(
             unformattedPrice.toString(),
             'ether'
           );

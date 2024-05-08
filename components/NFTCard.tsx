@@ -9,7 +9,7 @@ type NftObject = {
   seller: string;
   owner: string;
   description: string;
-  image: StaticImageData;
+  image: StaticImageData | string;
   price: string;
 };
 
