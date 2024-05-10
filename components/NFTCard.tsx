@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import Image, { StaticImageData } from 'next/image';
 import Link from 'next/link';
 import { NFTContext } from '@/contexts/NFTContext';
+import { shortenAddress } from '@/utils/shortenAddress';
 
 type NftObject = {
   index: number;
@@ -19,18 +20,23 @@ interface NFTCardProps {
 
 const NFTCard: React.FC<NFTCardProps> = ({ nft }) => {
   const { nftCurrency } = useContext(NFTContext);
-
+  console.log(nft);
   return (
     <Link
       href={{ pathname: '/nft-details', query: { nft: JSON.stringify(nft) } }}
     >
       <div className="flex-1 min-w-215 max-w-max xs:max-w-none sm:w-full sm:min-w-155 minmd:min-w-256 minlg:min-w-327 dark:bg-nft-black-3 bg-white rounded-2xl p-4 m-4 minlg:m-8 sm:my-2 sm:mx-2 cursor-pointer shadow-md">
         <div className="relative w-full h-52 sm:h-36 xs:h-56 mind:h-60 minlg:h-300 rounded-2xl overflow-hidden">
-          <Image
+          {/* <Image
             src={nft.image}
             layout="fill"
             objectFit="cover"
             alt={`nft${nft.index}`}
+          /> */}
+          <img
+            src={`${nft.image}`}
+            alt={`nft${nft.index}`}
+            className="h-full"
           />
         </div>
         <div className="mt-3 flex flex-col">
@@ -42,7 +48,7 @@ const NFTCard: React.FC<NFTCardProps> = ({ nft }) => {
               {nft.price} <span className="normal">{nftCurrency}</span>
             </p>
             <p className="font-poppins dark:text-white text-nft-black-1 font-semibold text-xs minlg:text-lg">
-              {nft.seller}
+              {shortenAddress(nft.seller)}
             </p>
           </div>
         </div>

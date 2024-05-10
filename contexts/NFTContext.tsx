@@ -10,6 +10,7 @@ import { create as ipfsHttpClient } from 'ipfs-http-client';
 import { FormInputType } from '@/app/create-nft/page';
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import { NFTItemType } from '@/types';
+import Image from 'next/image';
 
 const client = ipfsHttpClient({
   host: 'localhost',
@@ -32,6 +33,7 @@ interface INFTContext {
     router: AppRouterInstance
   ) => Promise<void>;
   fetchNFTs: () => Promise<NFTItemType[] | null>;
+  fetchMyNFTsOrListedNFTs: (type: string) => Promise<NFTItemType[] | null>;
 }
 
 export const NFTContext = createContext<INFTContext>({
@@ -41,6 +43,7 @@ export const NFTContext = createContext<INFTContext>({
   uploadToIPFS: async () => {},
   createNFT: async () => {},
   fetchNFTs: async () => null,
+  fetchMyNFTsOrListedNFTs: async () => null,
 });
 
 export const NFTProvider: React.FC<PropsWithChildren> = ({ children }) => {
@@ -144,13 +147,58 @@ export const NFTProvider: React.FC<PropsWithChildren> = ({ children }) => {
         async ({ tokenId, seller, owner, price: unformattedPrice }: any) => {
           // tokenURI方法是继承自ERC721URIStorage合约的方法
           const tokenURI = await contract.tokenURI(tokenId);
-          console.log('卡了吗？1');
+          console.log('fetching metadata');
           console.log(tokenURI);
 
-          const {
-            data: { image, name, description },
-          } = await axios.get(tokenURI);
-          console.log('卡了吗？2');
+          const { data } = await axios.get(tokenURI);
+          const { image, name, description } = data;
+          console.log('fetched');
+
+          const price = ethers.utils.formatUnits(
+            unformattedPrice.toString(),
+            'ether'
+          );
+
+          return {
+            price,
+            tokenId: tokenId.toNumber(),
+            seller,
+            owner,
+            image,
+            name,
+            description,
+            tokenURI,
+          };
+        }
+      )
+    );
+
+    return items;
+  };
+
+  const fetchMyNFTsOrListedNFTs = async (type: string) => {
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    const signer = provider.getSigner();
+
+    const contract = fetchContract(signer);
+    const data =
+      type === 'fetchItemListed'
+        ? await contract.fetchItemsListed()
+        : await contract.fetchMyNFTs();
+
+    const items = await Promise.all(
+      data.map(
+        async ({ tokenId, seller, owner, price: unformattedPrice }: any) => {
+          // tokenURI方法是继承自ERC721URIStorage合约的方法
+          const tokenURI = await contract.tokenURI(tokenId);
+          console.log('fetching metadata');
+          console.log(tokenURI);
+
+          const { data } = await axios.get(tokenURI);
+          const { image, name, description } = data;
+          console.log('fetched');
 
           const price = ethers.utils.formatUnits(
             unformattedPrice.toString(),
@@ -183,6 +231,7 @@ export const NFTProvider: React.FC<PropsWithChildren> = ({ children }) => {
         uploadToIPFS,
         createNFT,
         fetchNFTs,
+        fetchMyNFTsOrListedNFTs,
       }}
     >
       {children}

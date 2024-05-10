@@ -52,7 +52,7 @@ const Home = () => {
               />
             ))}
 
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item, index) => (
+            {/* {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item, index) => (
               <NFTCard
                 key={`nft-${index + 1}`}
                 nft={{
@@ -66,7 +66,7 @@ const Home = () => {
                   image: image[`nft${item}`],
                 }}
               />
-            ))}
+            ))} */}
           </div>
         </section>
       </div>

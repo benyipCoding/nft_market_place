@@ -1,4 +1,5 @@
 export type NFTItemType = {
+  index: number;
   price: string;
   tokenId: number;
   seller: string;
