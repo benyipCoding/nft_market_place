@@ -36,7 +36,7 @@ const NFTCard: React.FC<NFTCardProps> = ({ nft }) => {
           <img
             src={`${nft.image}`}
             alt={`nft${nft.index}`}
-            className="h-full"
+            className="h-full aspect-auto m-auto"
           />
         </div>
         <div className="mt-3 flex flex-col">

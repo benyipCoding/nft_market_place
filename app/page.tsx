@@ -14,7 +14,6 @@ const Home = () => {
     fetchNFTs().then((items) => {
       if (!items) return;
       setNfts(items);
-      console.log('@@@@@@@@', items);
     });
   }, []);
 
@@ -43,7 +42,7 @@ const Home = () => {
                 nft={{
                   index: nft.tokenId,
                   name: nft.name,
-                  seller: shortenAddress(nft.seller),
+                  seller: nft.seller,
                   owner: nft.owner,
                   description: nft.description,
                   price: nft.price,
