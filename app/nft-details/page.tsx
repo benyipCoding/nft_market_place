@@ -12,6 +12,8 @@ import { shortenAddress } from '@/utils/shortenAddress';
 const NFTDetails = () => {
   const { currentAccount, nftCurrency } = useContext(NFTContext);
   const [isLoading, setIsLoading] = useState(true);
+  const [paymentModal, setPaymentModal] = useState(false);
+
   const [nft, setNft] = useState<NFTItemType>({
     index: 0,
     price: '',
@@ -96,16 +98,33 @@ const NFTDetails = () => {
             <Button
               btnName={`Buy for ${nft.price} ${nftCurrency}`}
               classStyles="mr-5 sm:mr-0 rounded-xl"
-              handleClick={() => {}}
+              handleClick={() => setPaymentModal(true)}
             />
           )}
         </div>
       </div>
 
-      <Modal
-        header="Check Out"
-        body={<PaymentBodyCmp nft={nft} nftCurrency={nftCurrency} />}
-      />
+      {paymentModal && (
+        <Modal
+          header="Check Out"
+          body={<PaymentBodyCmp nft={nft} nftCurrency={nftCurrency} />}
+          footer={
+            <div className="flex flex-row sm:flex-col">
+              <Button
+                btnName="Checkout"
+                classStyles="mr-5 sm:mb-5 rounded-xl sm:mr-0"
+                handleClick={() => {}}
+              />
+              <Button
+                btnName="Cancel"
+                classStyles="sm:mr-0 rounded-xl"
+                handleClick={() => setPaymentModal(false)}
+              />
+            </div>
+          }
+          handleClose={() => setPaymentModal(false)}
+        />
+      )}
     </div>
   );
 };

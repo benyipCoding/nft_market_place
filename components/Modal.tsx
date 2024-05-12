@@ -7,14 +7,27 @@ import images from '@/assets';
 interface ModalProps {
   header: string;
   body: React.ReactNode;
+  footer: React.ReactNode;
+  handleClose: () => void;
 }
 
-const Modal: React.FC<ModalProps> = ({ header, body }) => {
+const Modal: React.FC<ModalProps> = ({ header, body, footer, handleClose }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
 
+  const handleClickOutside = (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+      handleClose();
+    }
+  };
+
   return (
-    <div className="flexCenter fixed inset-0 z-10 bg-overlay-black animated fadeIn">
+    <div
+      className="flexCenter fixed inset-0 z-10 bg-overlay-black animated fadeIn"
+      onClick={handleClickOutside}
+    >
       <div
         ref={modalRef}
         className="w-2/5 md:w-11/12 minlg:w-2/4 dark:bg-nft-dark bg-white flex flex-col rounded-lg"
@@ -22,7 +35,7 @@ const Modal: React.FC<ModalProps> = ({ header, body }) => {
         <div className="flex justify-end mt-4 mr-4 minlg:mt-6 minlg:mr-6">
           <div
             className="relative w-3 h-3 minlg:w-6 minlg:h-6 cursor-pointer"
-            onClick={() => {}}
+            onClick={handleClose}
           >
             <Image
               src={images.cross}
@@ -35,7 +48,7 @@ const Modal: React.FC<ModalProps> = ({ header, body }) => {
 
         <div className="flexCenter w-full text-center p-4">
           <h2 className="font-poppins dark:text-white text-nft-black-1 font-normal text-2xl">
-            Header Title
+            {header}
           </h2>
         </div>
 
@@ -43,7 +56,7 @@ const Modal: React.FC<ModalProps> = ({ header, body }) => {
           {body}
         </div>
 
-        <div className="flexCenter p-4">Footer</div>
+        <div className="flexCenter p-4">{footer}</div>
       </div>
     </div>
   );
