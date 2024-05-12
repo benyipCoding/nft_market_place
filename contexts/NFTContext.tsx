@@ -94,10 +94,13 @@ export const NFTProvider: React.FC<PropsWithChildren> = ({ children }) => {
     router: AppRouterInstance
   ) => {
     const { name, description, price } = formInput;
+    console.log(123);
+
     if (!name || !description || !price || !fileUrl) return;
     const data = JSON.stringify({ name, description, image: fileUrl });
     try {
       const added = await client.add(data);
+
       const url = `https://ipfs.io/ipfs/${added.path}`;
 
       await createSale(url, price);

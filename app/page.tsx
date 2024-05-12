@@ -1,10 +1,8 @@
 'use client';
 import { Banner, CreatorCards, NFTCard } from '@/components';
 import React, { useContext, useEffect, useState } from 'react';
-import image from '@/assets';
 import { NFTContext } from '@/contexts/NFTContext';
 import { NFTItemType } from '@/types';
-import { shortenAddress } from '@/utils/shortenAddress';
 
 const Home = () => {
   const { fetchNFTs } = useContext(NFTContext);
@@ -62,7 +60,7 @@ const Home = () => {
                   description: `Cool NFT on Sale`,
                   price: (10 - item * 0.534).toFixed(2),
                   // @ts-ignore
-                  image: image[`nft${item}`],
+                  image: `${images[`nft${item}`]}`,
                 }}
               />
             ))} */}

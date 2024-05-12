@@ -6,7 +6,7 @@ import { NFTContext } from '@/contexts/NFTContext';
 import { NFTItemType } from '@/types';
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
-import { Button, Loader } from '@/components';
+import { Button, Loader, Modal, PaymentBodyCmp } from '@/components';
 import { shortenAddress } from '@/utils/shortenAddress';
 
 const NFTDetails = () => {
@@ -96,10 +96,16 @@ const NFTDetails = () => {
             <Button
               btnName={`Buy for ${nft.price} ${nftCurrency}`}
               classStyles="mr-5 sm:mr-0 rounded-xl"
+              handleClick={() => {}}
             />
           )}
         </div>
       </div>
+
+      <Modal
+        header="Check Out"
+        body={<PaymentBodyCmp nft={nft} nftCurrency={nftCurrency} />}
+      />
     </div>
   );
 };
