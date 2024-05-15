@@ -1,5 +1,5 @@
 'use client';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import images from '@/assets';
 import { NFTItemType } from '@/types';
 import { NFTContext } from '@/contexts/NFTContext';
@@ -19,6 +19,15 @@ const MyNFTs = () => {
       </div>
     );
   }
+
+  useEffect(() => {
+    fetchMyNFTsOrListedNFTs().then((items) => {
+      if (!items) return;
+      setNfts(items);
+      setIsLoading(false);
+      console.log('@@@@@@@@', items);
+    });
+  }, []);
 
   return (
     <div className="w-full flex justify-start items-center flex-col min-h-screen">
@@ -57,7 +66,7 @@ const MyNFTs = () => {
           </div>
           <div className="mt-3 w-full flex flex-wrap">
             {nfts.map((nft) => (
-              <NFTCard key={nft.tokenId} nft={nft} />
+              <NFTCard key={nft.tokenId} nft={nft} onProfilePage />
             ))}
           </div>
         </div>

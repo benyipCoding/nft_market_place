@@ -33,7 +33,8 @@ interface INFTContext {
     router: AppRouterInstance
   ) => Promise<void>;
   fetchNFTs: () => Promise<NFTItemType[] | null>;
-  fetchMyNFTsOrListedNFTs: (type: string) => Promise<NFTItemType[] | null>;
+  fetchMyNFTsOrListedNFTs: (type?: string) => Promise<NFTItemType[] | null>;
+  buyNFT: (nft: NFTItemType) => Promise<void>;
 }
 
 export const NFTContext = createContext<INFTContext>({
@@ -44,6 +45,7 @@ export const NFTContext = createContext<INFTContext>({
   createNFT: async () => {},
   fetchNFTs: async () => null,
   fetchMyNFTsOrListedNFTs: async () => null,
+  buyNFT: async () => {},
 });
 
 export const NFTProvider: React.FC<PropsWithChildren> = ({ children }) => {
@@ -225,6 +227,22 @@ export const NFTProvider: React.FC<PropsWithChildren> = ({ children }) => {
     return items;
   };
 
+  const buyNFT = async (nft: NFTItemType) => {
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    const signer = provider.getSigner();
+
+    const contract = fetchContract(signer);
+    const price = ethers.utils.parseUnits(nft.price.toString(), 'ether');
+    console.log({ price });
+
+    const transaction = await contract.createMarketSale(nft.tokenId, {
+      value: price,
+    });
+    await transaction.wait();
+  };
+
   return (
     <NFTContext.Provider
       value={{
@@ -235,6 +253,7 @@ export const NFTProvider: React.FC<PropsWithChildren> = ({ children }) => {
         createNFT,
         fetchNFTs,
         fetchMyNFTsOrListedNFTs,
+        buyNFT,
       }}
     >
       {children}

@@ -16,9 +16,10 @@ type NftObject = {
 
 interface NFTCardProps {
   nft: NftObject;
+  onProfilePage?: boolean;
 }
 
-const NFTCard: React.FC<NFTCardProps> = ({ nft }) => {
+const NFTCard: React.FC<NFTCardProps> = ({ nft, onProfilePage }) => {
   const { nftCurrency } = useContext(NFTContext);
   console.log(nft);
   return (
@@ -48,7 +49,7 @@ const NFTCard: React.FC<NFTCardProps> = ({ nft }) => {
               {nft.price} <span className="normal">{nftCurrency}</span>
             </p>
             <p className="font-poppins dark:text-white text-nft-black-1 font-semibold text-xs minlg:text-lg">
-              {shortenAddress(nft.seller)}
+              {shortenAddress(onProfilePage ? nft.owner : nft.seller)}
             </p>
           </div>
         </div>

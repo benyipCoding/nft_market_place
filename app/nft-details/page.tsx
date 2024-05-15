@@ -4,15 +4,18 @@ import React, { useContext, useEffect, useState } from 'react';
 import images from '@/assets';
 import { NFTContext } from '@/contexts/NFTContext';
 import { NFTItemType } from '@/types';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { Button, Loader, Modal, PaymentBodyCmp } from '@/components';
 import { shortenAddress } from '@/utils/shortenAddress';
+import router from 'next/router';
 
 const NFTDetails = () => {
-  const { currentAccount, nftCurrency } = useContext(NFTContext);
+  const { currentAccount, nftCurrency, buyNFT } = useContext(NFTContext);
   const [isLoading, setIsLoading] = useState(true);
   const [paymentModal, setPaymentModal] = useState(false);
+  const [successModal, setSuccessModal] = useState(false);
+  const router = useRouter();
 
   const [nft, setNft] = useState<NFTItemType>({
     index: 0,
@@ -31,7 +34,14 @@ const NFTDetails = () => {
     console.log(JSON.parse(queryData));
 
     setIsLoading(false);
+    setSuccessModal(true);
   }, []);
+
+  const checkout = async () => {
+    await buyNFT(nft);
+
+    setPaymentModal(false);
+  };
 
   if (isLoading) return <Loader />;
 
@@ -113,12 +123,50 @@ const NFTDetails = () => {
               <Button
                 btnName="Checkout"
                 classStyles="mr-5 sm:mb-5 rounded-xl sm:mr-0"
-                handleClick={() => {}}
+                handleClick={checkout}
               />
               <Button
                 btnName="Cancel"
                 classStyles="sm:mr-0 rounded-xl"
                 handleClick={() => setPaymentModal(false)}
+              />
+            </div>
+          }
+          handleClose={() => setPaymentModal(false)}
+        />
+      )}
+
+      {successModal && (
+        <Modal
+          header="Payment Successful"
+          body={
+            <div
+              className="flexCenter flex-col text-center"
+              onClick={() => setSuccessModal(false)}
+            >
+              <div className="relative w-52 h-52">
+                <Image
+                  src={nft.image}
+                  objectFit="cover"
+                  layout="fill"
+                  alt="nft"
+                />
+              </div>
+              <p className="font-poppins dark:text-white text-nft-black-1 font-normal text-sm minlg:text-xl mt-10">
+                You successfully purchased
+                <span className="font-semibold">{nft.name}</span> from{' '}
+                <span className="font-semibold">
+                  {shortenAddress(nft.seller)}
+                </span>
+              </p>
+            </div>
+          }
+          footer={
+            <div className="flexCenter flex-col">
+              <Button
+                btnName="Check it out"
+                classStyles="sm:mb-5 rounded-xl sm:mr-0"
+                handleClick={() => router.push('/my-nfts')}
               />
             </div>
           }
